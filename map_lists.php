@@ -26,6 +26,7 @@ class Techriver_Map_lists {
 		add_action('admin_menu',array($this,'load_views'));
 		add_action('wp_enqueue_scripts',array($this,'enqueExt'));
 		add_action('wp_print_styles',array($this,'enqueStyles'));
+		add_Action('admin_enqueue_scripts',array($this,'enqueueAdmin'));
 		add_shortcode('tc_maplists',array($this,'handle_tcmap_sc'));
 		
 		
@@ -80,6 +81,33 @@ class Techriver_Map_lists {
 		
 	}
 	
+	public function enqueueAdmin() {
+		//Google Maps
+		wp_register_script('tc_googlemaps','http://maps.googleapis.com/maps/api/js?libraries=places',false,'3');
+		wp_enqueue_script('tc_googlemaps');
+		
+		
+		
+		$resource_array = array(
+		'bubble_marker' => plugins_url('assets/images/bubble-marker.png',__FILE__), // deprecated old marker.
+		'bubble_marker_xsmall' => plugins_url('assets/images/bubble_marker_xsmall.png',__FILE__),
+		'bubble_marker_small' => plugins_url('assets/images/bubble_marker_small.png',__FILE__),
+		'bubble_marker_medium' => plugins_url('assets/images/bubble_marker_medium.png',__FILE__),
+		'bubble_marker_lg' => plugins_url('assets/images/bubble_marker_lg.png',__FILE__),
+		'ajax_url' => admin_url('admin-ajax.php'),__FILE__);
+		wp_register_script('tc_map_admin_js',plugins_url('assets/js/admin_plugin.js',__FILE__),array('jquery'),'1.0.0',true);
+		
+		//Get map data for to display coords
+		global $wpdb;
+		$sql = "SELECT * FROM {$this->tablename}";
+		$results = $wpdb->get_results($sql,ARRAY_A);
+		$resource_array['map_data'] = $results; // Store to localized array data
+		wp_localize_script('tc_map_admin_js','tc_resource_obj_ml',$resource_array);
+		
+		wp_enqueue_script('tc_map_admin_js');
+		
+	}
+	
 	public function enqueStyles() {
 		wp_enqueue_style('techriver_maplistsCSS',plugins_url('assets/css/style.css',__FILE__));
 	}
@@ -101,6 +129,26 @@ class Techriver_Map_lists {
 	
 	
 	public function load_admin_view_add() {
+		global $wpdb;
+		//Process input data
+		if(isset($_POST['add_new']) && $_POST['add_new'] == 'true') {
+			$insertdata = array();
+			$count=0;
+			foreach($_POST as $key => $val) {
+				if($count > 2){
+					$val = mysql_real_escape_string($val);
+					$insertdata[$key] = $val;
+				}
+				$count++;
+			}
+			$insertdata['established'] = current_time('mysql',1);
+			if($wpdb->insert($this->tablename,$insertdata)){
+				echo '<div class="updated">You have successfully added <b>'.$insertdata['name'].'</b></div>';	
+			}
+			else {
+				echo '<div class="error">There was an error with your request. Please try again later</div>';
+			}
+		}
 		require_once(MAP_PLUGIN_PATH.'/admin/add.php');
 	}
 	
