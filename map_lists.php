@@ -124,6 +124,20 @@ class Techriver_Map_lists {
 	
 	
 	public function load_admin_view() {
+		global $wpdb;
+		if(isset($_GET['action'])) {
+			if($_GET['action'] == 'delete' && wp_verify_nonce($_GET['_wpnonce'],'sp_delete_customer')) {
+				if($wpdb->delete($this->tablename,array('id'=>$_GET['customer']))) {
+					echo '<div class="updated" style="margin-bottom:20px;display:block;clear:both;">Successfully performed delete.</div>';
+				}
+				else {
+					echo '<div class="error">Action was unable to be completed. please try again later.</div>';
+				}
+			}
+			else {
+				echo '<div class="error">unable to execute invalid action.</div>';
+			}
+		}
 		require_once(MAP_PLUGIN_PATH.'/admin/main.php');
 	}
 	

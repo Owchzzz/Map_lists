@@ -1,5 +1,6 @@
+
 <div class="wrap">
-	<h2 style="float:left;">
+	<h2 style="float:left; clear:both;">
 		Techriver Map Lists Functionality
 	</h2>
 	<a href="#" style="padding:5px 10px;background-color:#fafafa;float:left;text-decoration:none;margin-top:10px;">Add new</a>
@@ -194,19 +195,7 @@ class Techriver_maplists_list extends WP_List_Table{
 		$this->process_bulk_action();
 	}
 	public function process_bulk_action() {
-		//Detect when a bulk action is being triggered...
-		if ( 'delete' === $this->current_action() ) {
-			// In our file that handles the request, verify the nonce.
-			$nonce = esc_attr( $_REQUEST['_wpnonce'] );
-			if ( ! wp_verify_nonce( $nonce, 'sp_delete_customer' ) ) {
-				die( 'Go get a life script kiddies' );
-			}
-			else {
-				self::delete_data( absint( $_GET['customer'] ) );
-				wp_redirect( esc_url( add_query_arg() ) );
-				exit;
-			}
-		}
+		
 		// If the delete bulk action is triggered
 		if ( ( isset( $_POST['action'] ) && $_POST['action'] == 'bulk-delete' )
 		     || ( isset( $_POST['action2'] ) && $_POST['action2'] == 'bulk-delete' )
