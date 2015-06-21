@@ -38,7 +38,7 @@ class Techriver_Map_lists_install {
 			established datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			name text NOT NULL,
 			location text NOT NULL,
-			langitude DOUBLE NOT NULL,
+			latitude DOUBLE NOT NULL,
 			longitude DOUBLE NOT NULL,
 			email text NOT NULL,
 			UNIQUE KEY id (id)

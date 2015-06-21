@@ -1,8 +1,14 @@
 <div class="wrap">
-	<h2>
+	<h2 style="float:left;">
 		Techriver Map Lists Functionality
 	</h2>
+	<a href="#" style="padding:5px 10px;background-color:#fafafa;float:left;text-decoration:none;margin-top:10px;">Add new</a>
+	<div style="clear:both;">
+		
+	</div>
 	<hr/>
+	<form method="POST">
+
 	<?php // Show table
 if ( ! class_exists( 'WP_List_Table' ) ) {
     require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
@@ -57,10 +63,10 @@ class Techriver_maplists_list extends WP_List_Table{
 		 return $result;
 	}
 	
-	public static function delete_data( $id ) {
+	public static function delete_data( $id, $tablename ) {
 		  global $wpdb;
 		  $wpdb->delete(
-		    "{$this->tablename}",
+		    "{$tablename}",
 		    [ 'id' => $id ],
 		    [ '%d' ]
 		  );
@@ -151,6 +157,7 @@ class Techriver_maplists_list extends WP_List_Table{
 	public function get_sortable_columns() {
 		$sortable_columns = array(
 			'name' => array( 'name', true ),
+			'id' => array ( 'id', true)
 		);
 		return $sortable_columns;
 	}
@@ -184,6 +191,7 @@ class Techriver_maplists_list extends WP_List_Table{
 			'per_page'    => $per_page //WE have to determine how many items to show on a page
 		] );
 		$this->items = $this->get_data( $per_page, $current_page );
+		$this->process_bulk_action();
 	}
 	public function process_bulk_action() {
 		//Detect when a bulk action is being triggered...
@@ -194,7 +202,7 @@ class Techriver_maplists_list extends WP_List_Table{
 				die( 'Go get a life script kiddies' );
 			}
 			else {
-				self::delete_customer( absint( $_GET['customer'] ) );
+				self::delete_data( absint( $_GET['customer'] ) );
 				wp_redirect( esc_url( add_query_arg() ) );
 				exit;
 			}
@@ -206,7 +214,7 @@ class Techriver_maplists_list extends WP_List_Table{
 			$delete_ids = esc_sql( $_POST['bulk-delete'] );
 			// loop over the array of record IDs and delete them
 			foreach ( $delete_ids as $id ) {
-				self::delete_customer( $id );
+				$this->delete_data($id,$this->tablename);
 			}
 			wp_redirect( esc_url( add_query_arg() ) );
 			exit;
@@ -217,4 +225,6 @@ $map_lists_list = new Techriver_maplists_list();
 $map_lists_list->prepare_items();
 $map_lists_list->display();
 ?> <!--END OF MAP List Table PHP-->
+				
+	</form>
 </div>
