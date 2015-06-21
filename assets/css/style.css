@@ -18,13 +18,20 @@ ul.user-controls-list a {
 
 #simplemodal-modal {
 	display:none;
-	background-color:#f7f7f7;
+	background-color:white;
 	border:1px solid #ececec;
 	padding:15px;
 	font-family:Arial;
 	width:80%;
+	height:450px;
+	font-size:12px;
 	margin:0px auto;
 	z-index:1000;
+	-webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+-moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+	overflow-y: hidden;
+	
 }
 
 .simplemodal-close {
@@ -36,33 +43,39 @@ ul.user-controls-list a {
 #simplemodal-modal .formgroup {
 	clear:both;
 	display:block;
-	margin-top:15px;
-	margin-bottom:25px;
+	margin-top:5px;
+	margin-bottom:5px;
 }
 #simplemodal-modal .formgroup textarea {
 	width:100%;
-	resize:n-resize;
-	height:200px;
+	resize:none;
 	margin-top:25px;
 }
 #simplemodal-modal form .formgroup label {
 	padding-top:10px;
 	display:block;
 	float:left;
-	width:30%;
+	width:20%;
 }
 #simplemodal-modal form .formgroup input {
 	display:block;
 	float:left;
-	width:60%;
+	width:80%;
 	padding:5px;
+	font-size:12px;
 }
 
 #simplemodal-modal form .formgroup input.loc {
 	display:block;
-	clear:both;
-	width:90%;
-	margin-top:25px;	
+	float:left;
+	width:80%;
+		
+}
+
+#simplemodal-modal form textarea {
+	padding:5px;
+	font-size:12px;
+	height:100px;
 }
 
 
@@ -106,4 +119,14 @@ box-shadow: 0px 0px 15px 1px rgba(94,94,94,1);
 .tc-sidebar-nav  li {
 	border-bottom:1px solid #ececec;
 	margin-bottom:15px;
+	cursor:pointer;
+}
+
+.tc-sidebar-nav li:hover {
+	background-color:#e2e2e2;
+}
+
+.tc-sidebar-nav li b {
+	margin-left:5px;
+	margin-right:3px;
 }

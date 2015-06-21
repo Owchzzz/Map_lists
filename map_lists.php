@@ -150,7 +150,7 @@ class Techriver_Map_lists {
 			<li><a href="#" class="tc-open-sidebar" data-target="maplist"><i class="icon ion-navicon-round"></i></a></li>
 		</ul>
 	</div>
-	<div id="googleMap" style="width:100%;height:620px;">
+	<div id="googleMap" style="width:100%;height:420px;">
 	
 	</div>
 </div>';
