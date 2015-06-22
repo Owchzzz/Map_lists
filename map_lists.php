@@ -26,7 +26,7 @@ class Techriver_Map_lists {
 		add_action('admin_menu',array($this,'load_views'));
 		add_action('wp_enqueue_scripts',array($this,'enqueExt'));
 		add_action('wp_print_styles',array($this,'enqueStyles'));
-		add_Action('admin_enqueue_scripts',array($this,'enqueueAdmin'));
+		add_action('admin_enqueue_scripts',array($this,'enqueueAdmin'));
 		add_shortcode('tc_maplists',array($this,'handle_tcmap_sc'));
 		
 		
@@ -127,11 +127,11 @@ class Techriver_Map_lists {
 		global $wpdb;
 		if(isset($_GET['action'])) {
 			if($_GET['action'] == 'delete' && wp_verify_nonce($_GET['_wpnonce'],'sp_delete_customer')) {
-				if($wpdb->delete($this->tablename,array('id'=>$_GET['customer']))) {
+				if($wpdb->delete($this->tablename,array('id'=>$_GET['id']))) {
 					echo '<div class="updated" style="margin-bottom:20px;display:block;clear:both;">Successfully performed delete.</div>';
 				}
 				else {
-					echo '<div class="error">Action was unable to be completed. please try again later.</div>';
+					// What
 				}
 			}
 			else {

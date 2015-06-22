@@ -3,7 +3,7 @@
 	<h2 style="float:left; clear:both;">
 		Techriver Map Lists Functionality
 	</h2>
-	<a href="#" style="padding:5px 10px;background-color:#fafafa;float:left;text-decoration:none;margin-top:10px;">Add new</a>
+	<a href="<?php echo admin_url('admin.php?page=tcmaplists_admin_add');?>" style="padding:5px 10px;background-color:#fafafa;float:left;text-decoration:none;margin-top:10px;">Add new</a>
 	<div style="clear:both;">
 		
 	</div>
@@ -205,7 +205,8 @@ class Techriver_maplists_list extends WP_List_Table{
 			foreach ( $delete_ids as $id ) {
 				$this->delete_data($id,$this->tablename);
 			}
-			wp_redirect( esc_url( add_query_arg() ) );
+			//wp_redirect( admin_url('admin.php?page=tcmaplists_admin')  );
+			echo '<meta http-equiv="refresh" content="0; url='.admin_url('admin.php?page=tcmaplists_admin').'">';
 			exit;
 		}
 	}

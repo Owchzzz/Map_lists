@@ -156,7 +156,7 @@ jQuery(function ($) {
 			var mapdata = tc_resource_obj_ml.map_data;
 			var list_count = i+1;
 			$('ul#tc-ul-maplist').append(
-			$('<li onclick="triggermapclick('+i+')">'+list_count+'<b>'+mapdata[i]['name']+'</b>,<bdi style="font-size:8px;">'+mapdata[i]['location']+'</bdi></li>')
+			$('<li onclick="triggermapclick('+i+')">'+list_count+'<b>'+mapdata[i]['name']+'</b>,<bdi style="font-size:10px;">'+mapdata[i]['location']+'</bdi></li>')
 			);
 		}
 		locklist=false;
