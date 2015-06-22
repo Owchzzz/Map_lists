@@ -4,7 +4,7 @@ Plugin Name: Map Lists
 Plugin URI: 
 Description: A plugin created by TechRiver specifically for savejon.org
 Author: Tech River
-Version: 0.0.3
+Version: 0.0.4
 Author URI: http://ma.tt/
 */
 
@@ -15,7 +15,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 
 class Techriver_Map_lists {
 	
-	protected $version="0.0.3";
+	protected $version="0.0.4";
 	
 	protected $loader;
 	
@@ -28,6 +28,7 @@ class Techriver_Map_lists {
 		add_action('wp_print_styles',array($this,'enqueStyles'));
 		add_action('admin_init',array($this,'enqueueAdmin'));
 		add_shortcode('tc_maplists',array($this,'handle_tcmap_sc'));
+		add_action('plugins_loaded',array($this,'updatePlugin'));
 		
 		
 		//Set class vars
