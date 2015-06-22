@@ -51,7 +51,7 @@ class Techriver_Map_lists {
 		wp_enqueue_script('simpleModalJS',plugins_url('assets/js/simpleModalJS.js',__FILE__),array('jquery'),'1.0.0',true);
 		
 		//Google Maps
-		wp_register_script('tc_googlemaps','http://maps.googleapis.com/maps/api/js?libraries=places',false,'3');
+		wp_register_script('tc_googlemaps','https://maps.googleapis.com/maps/api/js?libraries=places',false,'3');
 		wp_enqueue_script('tc_googlemaps');
 		
 		//local js
