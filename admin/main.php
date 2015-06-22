@@ -7,6 +7,14 @@
 	<div style="clear:both;">
 		
 	</div>
+	
+	<div class="postbox" style="padding:25px;">
+		<b>Thank you for installing this plugin. Please note that to ensure full functionality of this plugin you are required to install the ff: </b>
+		<ul>
+			<li><a href="https://wordpress.org/plugins/wp-ionicons/">IonIcons for Wordpress</a> - A plugin that allows you to use the ion icon library anywhere within your site/</li>
+			<li><a href=" https://wordpress.org/plugins/ssl-insecure-content-fixer">SSL Insecure Content Fixer</a> -  only applicable for some servers. But it is recommended that you install this anyway </li>
+		</ul>
+	</div>
 	<hr/>
 	<form method="POST">
 
