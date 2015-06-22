@@ -1,6 +1,6 @@
 
-<div class="wrap">
-	<h2 style="float:left; clear:both;">
+<div class="wrap" style="clear:both;">
+	<h2 style=" clear:both;">
 		Techriver Map Lists Functionality
 	</h2>
 	<a href="<?php echo admin_url('admin.php?page=tcmaplists_admin_add');?>" style="padding:5px 10px;background-color:#fafafa;float:left;text-decoration:none;margin-top:10px;">Add new</a>

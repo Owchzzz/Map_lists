@@ -67,6 +67,14 @@ function codeAddress() {
 	    }
 }
 
+window.placeMarker = function(lat,lng) {
+	var marker =  new google.maps.Marker({
+            map: map, 
+            position: new google.maps.LatLng(lat,lng)
+        	});
+	markers.push(marker);
+};
+
 function getCountry(addrComponents) {
     for (var i = 0; i < addrComponents.length; i++) {
         if (addrComponents[i].types[0] == "country") {
@@ -80,7 +88,6 @@ function getCountry(addrComponents) {
     }
     return false;
 }
-
 
 function initialize() {
 	 var mapProp = {
@@ -166,6 +173,16 @@ function initialize() {
 	
 	//infowindow initialize
 	var infowindow = new google.maps.InfoWindow({content:'loading...'});
+	
+	if(typeof tc_resource_obj_ml.user_data !== "undefined" ){
+		var marker =  new google.maps.Marker({
+            map: map, 
+            position: new google.maps.LatLng(tc_resource_obj_ml.user_data[0]['latitude'],tc_resource_obj_ml.user_data[0]['longitude'])
+        	});
+		markers.push(marker);
+		
+	}
+	
 	for(var i = 0 ; i < arrayLength; i++){
 		var mapobj = tc_resource_obj_ml.map_data[i];
 		var myLatLng = new google.maps.LatLng(mapobj['latitude'],mapobj['longitude']);

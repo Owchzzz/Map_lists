@@ -18,7 +18,7 @@ div.form-grp {
 </style>
 <div class="wrap">
 	<h2>
-		Add new
+		<a style="color:#4c4c4c;" href="<?php echo admin_url('admin.php?page=tcmaplists_admin');?>"><i class="icon ion-arrow-left-b"></i></a> Add new
 	</h2>
 	<hr/>
 	<form method="POST">

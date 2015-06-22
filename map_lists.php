@@ -26,7 +26,7 @@ class Techriver_Map_lists {
 		add_action('admin_menu',array($this,'load_views'));
 		add_action('wp_enqueue_scripts',array($this,'enqueExt'));
 		add_action('wp_print_styles',array($this,'enqueStyles'));
-		add_action('admin_enqueue_scripts',array($this,'enqueueAdmin'));
+		add_action('admin_init',array($this,'enqueueAdmin'));
 		add_shortcode('tc_maplists',array($this,'handle_tcmap_sc'));
 		
 		
@@ -102,14 +102,33 @@ class Techriver_Map_lists {
 		$sql = "SELECT * FROM {$this->tablename}";
 		$results = $wpdb->get_results($sql,ARRAY_A);
 		$resource_array['map_data'] = $results; // Store to localized array data
+		
+		if(isset($_GET['page']) && $_GET['page'] == 'tcmaplists_admin') // Check if updating
+		{
+
+			if(isset($_GET['action']) && $_GET['action'] == 'modify') {
+
+				$userid = $_GET['id'];
+				$userdata = $wpdb->get_results("SELECT * FROM {$this->tablename} WHERE id = {$userid}",ARRAY_A);
+				$resource_array['user_data'] = $userdata;
+			}
+		}
+		
 		wp_localize_script('tc_map_admin_js','tc_resource_obj_ml',$resource_array);
 		
 		wp_enqueue_script('tc_map_admin_js');
+		
+		
+			
 		
 	}
 	
 	public function enqueStyles() {
 		wp_enqueue_style('techriver_maplistsCSS',plugins_url('assets/css/style.css',__FILE__));
+	}
+	
+	public function specialcase_js_update() {
+		
 	}
 	
 	public function updatePlugin() {
@@ -132,6 +151,26 @@ class Techriver_Map_lists {
 				}
 				else {
 					// What
+				}
+			}
+			else if($_GET['action'] == 'modify' && wp_verify_nonce($_GET['_wpnonce'],'sp_modify_customer')) {
+				
+				$userid=mysql_real_escape_string($_GET['id']);
+				$user_data = $wpdb->get_row("SELECT * FROM {$this->tablename} WHERE id = {$userid}");
+				require_once('admin/edit.php');
+			}
+			else  if($_GET['action'] == 'submit_modify' && wp_verify_nonce($_POST['sp_modify_customer_submit'],'sp_modify_customer_submit')) {
+				$userdata = array();
+				$skipcount=0;
+				foreach($_POST as $key=>$val) {
+					if($skipcount > 3) $userdata[$key] = mysql_real_escape_string($val);
+					$skipcount++;
+				}
+				if($wpdb->update($this->tablename,$userdata,array('id' => $_POST['id']))) {
+					echo '<div class="updated">Successfully updated table.</div>';
+				}
+				else {
+					echo '<div class="error">Unable to continue: '+var_dump($wpdb->last_query)+'</div>';
 				}
 			}
 			else {
