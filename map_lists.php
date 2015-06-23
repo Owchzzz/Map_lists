@@ -15,7 +15,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 
 class Techriver_Map_lists {
 	
-	protected $version="0.0.4";
+	protected $version="0.0.6";
 	
 	protected $loader;
 	
@@ -229,11 +229,18 @@ class Techriver_Map_lists {
 					<div class="formgroup">
 						<label>Current Address:</label>	<input type="text" id="google-loc" name="location" class="loc" placeholder="Address (ex. 148 Elm St.)"/>
 					</div>
+					
+					<div class="formgroup-add">
+						<label>City:</label>	<input type="text" id="city" name="city" placeholder="City"/>
+						<label>State:</label>	<input type="text" id="state" name="state" placeholder="State"/>
+						<label>ZIP:</label>	<input type="text" id="zipcode" name="zipcode" placeholder="Zipcode"/>
+					</div>
 					<div class="formgroup">
 						<textarea name="desc" placeholder= "place a unique description of yourself"></textarea>
 					</div><br/><br/>
 					<input type="hidden" id="google-loc-lat" name="latitude" value="0"/>
 					<input type="hidden" id="google-loc-long" name="longitude" value="0"/>
+					<input type="hidden" id="country" name="country" value=""/>
 					<div class="formgroup">
 						<input type="submit" value="Submit Data" />
 						

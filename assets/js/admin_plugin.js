@@ -3,6 +3,8 @@ var geocoder = new google.maps.Geocoder();
 
 var map_markers = [];
 var markers = [];
+
+var personal_location;
 jQuery(function($){
 	$(document).ready(function(){
 		var input = document.getElementById('google-loc');
@@ -22,6 +24,37 @@ jQuery(function($){
 	
 });//End of jQuery
 
+function set_add_form(addrComponents) {
+	 for (var i = 0; i < addrComponents.length; i++) {
+		 console.log('initializing component search on type: ' + addrComponents[i].types);
+        var addComp2 = addrComponents[i].types;
+		 for(var k = 0; k < addComp2.length; k++) {
+			 console.log('searching... ' + addComp2[k]);
+			 if(addComp2[k] == 'locality') { // City
+				 document.getElementById('google-loc-city').value = addrComponents[i].long_name;
+				 console.log('FOUND CITY');
+			 }
+			 if(addComp2[k] == 'country' || addComp2[k] == 'political') {
+				 document.getElementById('google-loc-country').value = addrComponents[i].long_name;
+				 console.log('FOUND COUNTRY');
+			 }
+			 if(addComp2[k] == 'administrative_area_level_1') { // State
+				 document.getElementById('google-loc-state').value = addrComponents[i].long_name;
+				 console.log('FOUND STATE');
+			 }
+			 if(addComp2[k] == 'postal_code') {
+				 document.getElementById('google-loc-zipcode').value= addrComponents[i].long_name;
+				 console.log('FOUND ZIP');
+			 }
+		 }
+		
+	 }
+	if(document.getElementById('google-loc-zipcode').value == '') {
+		document.getElementById('google-loc-zipcode').value="insert zip.";
+	}
+    return false;
+}
+
 function codeAddress() {
     if(document.getElementById("google-loc") !== null)
 	    {
@@ -37,6 +70,7 @@ function codeAddress() {
 		 
 		 var latitude = results[0].geometry.location.lat();
 		 var longitude = results[0].geometry.location.lng();
+		 set_add_form(results[0].address_components)
         //In this case it creates a marker, but you can get the lat and lng from the location.LatLng
         //map.setCenter(results[0].geometry.location);
 		 if(personal_location == 'US') {

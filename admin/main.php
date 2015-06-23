@@ -1,3 +1,11 @@
+<?php
+
+/*Declaring Plugin Dependcenies*/
+$plugin_dep_ionicon = class_exists('IonIcons') ? true : false;
+$plugin_dep_ssl = class_exists('SSLInsecureContentFixer') ? true : false;
+
+?>
+
 
 <div class="wrap" style="clear:both;">
 	<h2 style=" clear:both;">
@@ -7,14 +15,15 @@
 	<div style="clear:both;">
 		
 	</div>
-	
+	<?php if(!$plugin_dep_ionicon || !$plugin_dep_ssl):?>
 	<div class="postbox" style="padding:25px;">
 		<b>Thank you for installing this plugin. Please note that to ensure full functionality of this plugin you are required to install the ff: </b>
 		<ul>
-			<li><a href="https://wordpress.org/plugins/wp-ionicons/">IonIcons for Wordpress</a> - A plugin that allows you to use the ion icon library anywhere within your site/</li>
-			<li><a href=" https://wordpress.org/plugins/ssl-insecure-content-fixer">SSL Insecure Content Fixer</a> -  only applicable for some servers. But it is recommended that you install this anyway </li>
+			<?php if(!$plugin_dep_ionicon):?><li><a href="https://wordpress.org/plugins/wp-ionicons/" target="_blank">IonIcons for Wordpress</a> - A plugin that allows you to use the ion icon library anywhere within your site</li><?php endif;?>
+			<?php if(!$plugin_dep_ssl):?><li><a href=" https://wordpress.org/plugins/ssl-insecure-content-fixer" target="_blank">SSL Insecure Content Fixer</a> -  only applicable for some servers. But it is recommended that you install this anyway </li><?php endif;?>
 		</ul>
 	</div>
+	<?php endif;?>
 	<hr/>
 	<form method="POST">
 
@@ -130,14 +139,6 @@ class Techriver_maplists_list extends WP_List_Table{
 	 *
 	 * @return string
 	 */
-	function column_name( $item ) {
-		$delete_nonce = wp_create_nonce( 'sp_delete_customer' );
-		$title = '<strong>' . $item['name'] . '</strong>';
-		$actions = [
-			'delete' => sprintf( '<a href="?page=%s&action=%s&customer=%s&_wpnonce=%s">Delete</a>', esc_attr( $_REQUEST['page'] ), 'delete', absint( $item['id'] ), $delete_nonce )
-		];
-		return $title . $this->row_actions( $actions );
-	}
 	
 	function column_id( $item ) {
 		$delete_nonce = wp_create_nonce( 'sp_delete_customer');

@@ -41,9 +41,29 @@ div.form-grp {
 
 			<div class="form-grp">
 				<label for="name">Address:</label>
-				<input name="location" class="regular-text" id="google-loc" type="text" required="true" placeholder="123 - Street, City, Country"/>
-				<span class="description">The current address of the customer/user.<br/> Following the format Number Street, city, country </span>
+				<input name="location" class="regular-text" id="google-loc" type="text" required="true" placeholder="123 - Street"/>
+				<span class="description">The current address of the customer/user.<br/> Following the format Number - Street </span>
 			</div>
+			
+			<div class="form-grp">
+				<label for="name">City:</label>
+				<input name="city" class="regular-text" id="google-loc-city" type="text" required="true" placeholder="City"/>
+				<span class="description">The current city of residence.</span>
+			</div>
+			
+			<div class="form-grp">
+				<label for="name">State:</label>
+				<input name="state" class="regular-text" id="google-loc-state" type="text" required="true" placeholder="City"/>
+				<span class="description">The current state.</span>
+			</div>
+			
+			<div class="form-grp">
+				<label for="name">Zipcode:</label>
+				<input name="zipcode" class="regular-text" id="google-loc-zipcode" type="text" required="true" placeholder="City"/>
+				<span class="description">The current city of residence.</span>
+			</div>
+			
+			<input type="hidden" name="country" id="google-loc-country"/>
 		</div>
 		<div style="display:block;float:left;width:58%; height:280px;" id="google-map-admin">
 			Loading...

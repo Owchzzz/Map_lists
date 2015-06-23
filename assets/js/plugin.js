@@ -3,6 +3,7 @@ var markers = [];
 var locklist = true;
 
 var personal_location;
+var bounds = new google.maps.LatLngBounds();
 
 function codeAddress() {
     if(document.getElementById("google-loc") !== null)
@@ -26,7 +27,7 @@ function codeAddress() {
 			 // Set lat and longitude
 			 document.getElementById('google-loc-lat').value = latitude;
 			 document.getElementById('google-loc-long').value = longitude;
-			 
+			 set_add_form(results[0].address_components);
 			 //Remove markers and add new marker
 		 for(var i=0; i < markers.length; i++) {
 			 markers[i].setMap(null);
@@ -63,13 +64,58 @@ function getCountry(addrComponents) {
     return false;
 }
 
+
+function set_add_form(addrComponents) {
+	 for (var i = 0; i < addrComponents.length; i++) {
+		 console.log('initializing component search on type: ' + addrComponents[i].types);
+        var addComp2 = addrComponents[i].types;
+		 for(var k = 0; k < addComp2.length; k++) {
+			 console.log('searhing... ' + addComp2[k]);
+			 if(addComp2[k] == 'locality') { // City
+				 document.getElementById('city').value = addrComponents[i].long_name;
+				 console.log('FOUND CITY');
+			 }
+			 if(addComp2[k] == 'country' || addComp2[k] == 'political') {
+				 document.getElementById('country').value = personal_location;
+				 console.log('FOUND COUNTRY');
+			 }
+			 if(addComp2[k] == 'administrative_area_level_1') { // State
+				 document.getElementById('state').value = addrComponents[i].long_name;
+				 console.log('FOUND STATE');
+			 }
+			 if(addComp2[k] == 'postal_code') {
+				 document.getElementById('zipcode').value= addrComponents[i].short_name;
+				 console.log('FOUND ZIP');
+			 }
+		 }
+		
+	 }
+	if(document.getElementById('zipcode').value == '') {
+		document.getElementById('zipcode').value = 'INSERT ZIP';
+	}
+    return false;
+}
+
+
+
 jQuery(function ($) {
 	
 	//append to body
 	$(document).ready(function(){
 		if($('#googleMapContainer').length)
-		$('<!--Widgets (sidebars-hidden) --><div class="tc-sidebar-nav" id="maplist"><h4>List</h4><ul class="maplistlist" id="tc-ul-maplist"></ul></div>').prependTo('body');
-	
+		$('<!--Widgets (sidebars-hidden) --><div class="tc-sidebar-nav" id="maplist"><h4 style="float:left;">List</h4><i style="cursor:pointer;float:right;" class="tc-sidebar-nav-close icon ion-close"></i><ul class="maplistlist" id="tc-ul-maplist"></ul></div>').prependTo('body');
+		
+		$('.tc-sidebar-nav-close').click(function(){
+		if($('#googleMapContainer').length) {
+				var checker = parseInt($('#maplist').css('right'));
+				if(checker < 0){
+					//Do nothing
+				}
+				else {
+					$('.tc-open-sidebar').trigger('click');
+				}
+			}
+	});
 	});
 	
 	// Load dialog on page load
@@ -79,6 +125,7 @@ jQuery(function ($) {
 	$('.new-content-btn').click(function (e) {
 		$('#simplemodal-modal').modal({
 			onShow : function() {
+				$('.simplemodal-container').css('z-index','1032');
 				var input = document.getElementById('google-loc');
 	
 	var defaultbounds = new google.maps.LatLngBounds(
@@ -185,6 +232,8 @@ jQuery(function ($) {
 	
 	
 	
+	
+	
 });
 var map;
 var map_markers = [];
@@ -236,7 +285,7 @@ function initialize() {
 			origin: new google.maps.Point(0,0)
 	};
 	
-	var sizeofmarker = 10;
+	var sizeofmarker = 20;
 	var imageMarker = new google.maps.MarkerImage(
 	tc_resource_obj_ml.bubble_marker_lg,
 	new google.maps.Size(sizeofmarker,sizeofmarker),
@@ -301,18 +350,21 @@ function initialize() {
 			infowindow.setContent(content);
 			infowindow.setPosition(pos);
 			infowindow.open(this.getMap(),this);
+			
+			map.panTo(this.position);
+			
 		});
 		map_markers[i] = marker;
 	}
 	
 	google.maps.event.addListener(map, 'zoom_changed', function() {
 		zoomLevel = map.getZoom();
-		var maxPixelSize = 200;
+		var maxPixelSize = 450;
 		var minZoom = 2;
 		
 		var pixeltoRatio;
 		
-		pixeltoRatio = ((zoomLevel - minZoom) * 5);
+		pixeltoRatio = ((zoomLevel - minZoom) * 10);
 
 
 		if(pixeltoRatio > maxPixelSize) pixeltoRatio = maxPixelSize; // cap size
@@ -335,3 +387,4 @@ function initialize() {
 
 
 google.maps.event.addDomListener(window, 'load', initialize);
+	

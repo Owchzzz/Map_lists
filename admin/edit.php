@@ -47,6 +47,27 @@ div.form-grp {
 				<input name="location" class="regular-text" id="google-loc" type="text" required="true" placeholder="123 - Street, City, Country" value="<?php echo $user_data->location;?>"/>
 				<span class="description">The current address of the customer/user.<br/> Following the format Number Street, city, country </span>
 			</div>
+			
+			<div class="form-grp">
+				<label for="name">City:</label>
+				<input name="city" class="regular-text" id="google-loc-city" type="text" required="true" placeholder="City" value="<?php echo $user_data->city;?>"/>
+				<span class="description">The current city of residence.</span>
+			</div>
+			
+			<div class="form-grp">
+				<label for="name">State:</label>
+				<input name="state" class="regular-text" id="google-loc-state" type="text" required="true" placeholder="state" value="<?php echo $user_data->state;?>"/>
+				<span class="description">The current state.</span>
+			</div>
+			
+			<div class="form-grp">
+				<label for="name">Zipcode:</label>
+				<input name="zipcode" class="regular-text" id="google-loc-zipcode" type="text" required="true" placeholder="zipcode" value="<?php echo $user_data->zipcode;?>"/>
+				<span class="description">The current city of residence.</span>
+			</div>
+			
+			<!--hidden country locked US-->
+			<input type="hidden" name="country" id="google-loc-country" value="<?php echo $user_data->country;?>"/>
 		</div>
 		<div style="display:block;float:left;width:58%; height:280px;" id="google-map-admin" class="edit-user-map">
 			Loading...
