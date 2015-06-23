@@ -96,8 +96,8 @@ function set_add_form(addrComponents) {
     return false;
 }
 
-
-
+var tcFormData;
+var tcFormSuccess=false;
 jQuery(function ($) {
 	
 	//append to body
@@ -116,6 +116,8 @@ jQuery(function ($) {
 				}
 			}
 	});
+		
+	
 	});
 	
 	// Load dialog on page load
@@ -126,6 +128,17 @@ jQuery(function ($) {
 		$('#simplemodal-modal').modal({
 			onShow : function() {
 				$('.simplemodal-container').css('z-index','1032');
+				if(typeof tcFormData !== 'undefined' && tcFormData != '' && tcFormData !== 'undefined') {
+					$('#tc_google_map_submit :input').each(function(){
+						var obj = $(this);
+						
+						for(var i=0; i < tcFormData.length; i++) {
+							if($(obj).attr('name') == tcFormData[i]['name']) {
+								$(obj).attr('value',tcFormData[i]['value']);
+							}
+						}
+					});
+				}
 				var input = document.getElementById('google-loc');
 	
 	var defaultbounds = new google.maps.LatLngBounds(
@@ -142,7 +155,12 @@ jQuery(function ($) {
 				$('#google-loc').unbind();
 				$('#google-loc').bind('blur',codeAddress());
 				$('.pac-container').remove();
+				tcFormData = $('#tc_google_map_submit').serializeArray();
 				$.modal.close();
+				
+				if(tcFormSuccess == true ){
+					location.reload();
+				}
 			}
 			
 		});
@@ -159,14 +177,26 @@ jQuery(function ($) {
 	//AJAX FUNCTIONALITY
 	$('#tc_google_map_submit').on('submit',function(e){
 		e.preventDefault();
-		
-		var postData = $(this).serializeArray();
-		$.post(tc_resource_obj_ml.ajax_url,
-			 {'action' : 'submit_map_data', postData},
-			 function(response){
-				$('#simplemodal-modal').html(response);
-				$('#simplemodal-modal').css('margin-top','250px;');
-			});
+		var validsubmit = false;
+		var isValidZip = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test($('#zipcode').val());
+			if(isValidZip) {
+				validsubmit = true;
+			}
+			else {
+				alert('Invalid Zip code. Please enter a vlid US ZIP CODE.');
+				$('#zipcode').focus();
+			}
+		if(validsubmit){
+			var postData = $(this).serializeArray();
+			$.post(tc_resource_obj_ml.ajax_url,
+				 {'action' : 'submit_map_data', postData},
+				 function(response){
+					$('#simplemodal-modal').html(response);
+					$('#simplemodal-modal').css('margin-top','250px;');
+					tcFormSuccess = true;
+				});
+		}
+			
 	});
 	
 	
