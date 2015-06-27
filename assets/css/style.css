@@ -169,11 +169,11 @@ box-shadow: 0px 0px 15px 1px rgba(94,94,94,1);
 
 .formgroup {
 	display:block;
-	margin:0px !important;
+	margin:0px 1%;
 	padding:0px !important;
 	float:left;
-	background-color:black;
 	width:30%;
+	
 }
 
 .formgroup-add {
@@ -183,10 +183,15 @@ box-shadow: 0px 0px 15px 1px rgba(94,94,94,1);
 }
 
 .formgroup-add label{
+	margin-top:20px;
 	display:block;
 	float:left;
+	width:10%;
 }
 .formgroup-add input {
+	margin-top:20px;
 	display:block;
 	float:left;
+	width:20%;
+	margin-right:3%;
 }
