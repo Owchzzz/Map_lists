@@ -290,10 +290,10 @@ class Techriver_Map_lists {
 				<input type="hidden" name="tc_form_submit_maplists" value="1"/>
 					<div class="formgroup">
 						<label>Name:</label>	<input type="text" name="name" placeholder="Enter your name"/>
-					</div><br/><br/>
+					</div>
 					<div class="formgroup">
 						<label>Email:</label>	<input type="email" name="email" placeholder="Enter your email"/>
-					</div><br/><br/>
+					</div>
 					<div class="formgroup">
 						<label>Current Address:</label>	<input type="text" id="google-loc-2" name="location" class="loc" placeholder="Address (ex. 148 Elm St.)"/>
 					</div>
