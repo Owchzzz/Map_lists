@@ -64,6 +64,7 @@ div.form-grp {
 			</div>
 			
 			<input type="hidden" name="country" id="google-loc-country"/>
+			<input type="hidden" name="approved" id="approved" value="1"/>
 		</div>
 		<div style="display:block;float:left;width:58%; height:280px;" id="google-map-admin">
 			Loading...
@@ -72,10 +73,14 @@ div.form-grp {
 		<div style="clear:both;">
 			
 		</div>
-		<h3>
-			Description
-		</h3>
-		<?php wp_editor('','desc');?><br/>
-		<input type="submit" class="button-primary" style="float:right;"/>
+		<label style="display:block;float:left;clear:left;">Description: </label>
+		<select name="desc" style="display:block;float:left;margin-left:2%;width:33%;margin-top:-5px;">
+						<option>PSC Patient</option>
+						<option>PSC Supporter</option>
+						<option>PSC Clinician</option>
+						<option>PSC Research</option>
+					</select>
+		<br/>
+		<input style="clear:both;display:block;float:left;margin-top:15px;" class="btn-primary" type="submit"/>
 	</form>
 </div>

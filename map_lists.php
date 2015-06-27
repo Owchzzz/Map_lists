@@ -15,7 +15,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 
 class Techriver_Map_lists {
 	
-	protected $version="0.0.6";
+	protected $version="0.0.65";
 	
 	protected $loader;
 	
@@ -29,6 +29,7 @@ class Techriver_Map_lists {
 		add_action('admin_init',array($this,'enqueueAdmin'));
 		add_shortcode('tc_maplists',array($this,'handle_tcmap_sc'));
 		add_action('plugins_loaded',array($this,'updatePlugin'));
+		add_action('wp_dashboard_setup',array($this,'dashboard_widget'));
 		
 		
 		//Set class vars
@@ -67,7 +68,7 @@ class Techriver_Map_lists {
 		
 		//Get map data for to display coords
 		global $wpdb;
-		$sql = "SELECT * FROM {$this->tablename}";
+		$sql = "SELECT * FROM {$this->tablename} WHERE approved=(1)";
 		$results = $wpdb->get_results($sql,ARRAY_A);
 		$resource_array['map_data'] = $results; // Store to localized array data
 		
@@ -100,7 +101,7 @@ class Techriver_Map_lists {
 		
 		//Get map data for to display coords
 		global $wpdb;
-		$sql = "SELECT * FROM {$this->tablename}";
+		$sql = "SELECT * FROM {$this->tablename} WHERE approved=(1)";
 		$results = $wpdb->get_results($sql,ARRAY_A);
 		$resource_array['map_data'] = $results; // Store to localized array data
 		
@@ -118,9 +119,7 @@ class Techriver_Map_lists {
 		wp_localize_script('tc_map_admin_js','tc_resource_obj_ml',$resource_array);
 		
 		wp_enqueue_script('tc_map_admin_js');
-		
-		
-			
+	
 		
 	}
 	
@@ -140,8 +139,30 @@ class Techriver_Map_lists {
 	public function load_views() {
 		add_menu_page('TC Map Lists','TC Map Lists','manage_options','tcmaplists_admin',array($this,'load_admin_view'),'dashicons-admin-site');
 		add_submenu_page('tcmaplists_admin','TC Map Lists Add new','Add new','manage_options','tcmaplists_admin_add',array($this,'load_admin_view_add'));
+		
+		global $wpdb;
+		$sql = "SELECT * FROM {$this->tablename} WHERE approved=(false)";
+		$data=$wpdb->get_results($sql,ARRAY_A);
+		if(count($data)) {
+			add_submenu_page('tcmaplists_admin','Pending approvals <b style="color:red">('.$wpdb->num_rows.')</b>','Pending approvals <b style="color:red">('.$wpdb->num_rows.')</b>','manage_options','tcmaplists_admin_pending',array($this,'load_admin_view_pending'));
+		}
+		else {
+			add_submenu_page(null,'n/a','n/a','manage_options','tcmaplists_admin_pending',array($this,'no_admin_view_pending'));
+		}
 	}
 	
+	public function no_admin_view_pending() {
+		echo '<meta http-equiv="refresh" content="0; url='.admin_url('admin.php?page=tcmaplists_admin').'">';
+			exit;
+	}
+	
+	public function load_admin_view_pending() {
+		global $wpdb;
+		if(isset($_GET['action'])) {
+			
+		}
+		require_once('admin/approvals.php');
+	}
 	
 	public function load_admin_view() {
 		global $wpdb;
@@ -255,14 +276,55 @@ class Techriver_Map_lists {
 <div id="googleMapContainer">
 	<div id="user-controls">
 		<ul class="user-controls-list" style="list-style-type:none;display:inline;">
-			<li><a href="#" class="new-content-btn"><i class="icon ion-compose"></i></a></li>
+			<!--<li><a href="#" class="new-content-btn"><i class="icon ion-compose"></i></a></li>-->
 			<li><a href="#" class="tc-open-sidebar" data-target="maplist"><i class="icon ion-navicon-round"></i></a></li>
 		</ul>
 	</div>
 	<div id="googleMap" style="width:100%;height:420px;">
 	
 	</div>
-</div>';
+</div>
+<div class="outer_maps_form">
+				<form id="tc_google_map_submit2" method="post">
+				'.$wpnonce_form.'
+				<input type="hidden" name="tc_form_submit_maplists" value="1"/>
+					<div class="formgroup">
+						<label>Name:</label>	<input type="text" name="name" placeholder="Enter your name"/>
+					</div><br/><br/>
+					<div class="formgroup">
+						<label>Email:</label>	<input type="email" name="email" placeholder="Enter your email"/>
+					</div><br/><br/>
+					<div class="formgroup">
+						<label>Current Address:</label>	<input type="text" id="google-loc-2" name="location" class="loc" placeholder="Address (ex. 148 Elm St.)"/>
+					</div>
+					
+					<div class="formgroup-add">
+						<label>City:</label>	<input type="text" id="city2" name="city" placeholder="City"/>
+						<label>State:</label>	<input type="text" id="state2" name="state" placeholder="State"/>
+						<label>ZIP:</label>	<input type="text" id="zipcode2" name="zipcode" placeholder="Zipcode"/>
+					</div>
+					<div class="formgroup" style="margin-top:15px;">
+					<label>Description</label>
+					<select name="desc">
+						<option>PSC Patient</option>
+						<option>PSC Supporter</option>
+						<option>PSC Clinician</option>
+						<option>PSC Research</option>
+					</select>
+					</div>
+					<div class="formgroup" style="margin-top:15px; font-size:14px;font-weight:bold;">
+						<input style="width:20px;height:20px;margin-top:15px;" type="checkbox" name="anonymous" value="1"/><label style="margin-top:-12px;margin-left:5px;">Post as anonymous.</label>
+					</div>
+					<input type="hidden" id="google-loc-lat2" name="latitude" value="0"/>
+					<input type="hidden" id="google-loc-long2" name="longitude" value="0"/>
+					<input type="hidden" id="country2" name="country" value=""/>
+					<div class="formgroup">
+						<input type="submit" value="Submit Data" />
+						
+					</div>
+				</form>
+</div>
+';
 		return $output;
 	}
 	
@@ -284,6 +346,35 @@ class Techriver_Map_lists {
 			}
 				
 			
+		}
+	}
+	
+	
+	public function dashboard_widget() {
+		wp_add_dashboard_widget(
+                 'tc_maplists_dash',         // Widget slug.
+                 'Techriver Maps List',         // Title.
+                 array($this,'load_dashboard_widget') // Display function.
+        );
+	}
+	
+	public function load_dashboard_widget() {
+		global $wpdb;
+		$sql = "SELECT * FROM {$this->tablename} WHERE approved=(0)";
+		$data = $wpdb->get_results($sql,ARRAY_A);
+		$notif = false;
+		if(count($data) > 0) {
+			$datac = count($data);
+			$extension1 = $datac > 1 ? 's' :'';
+			$extension2 = $datac > 1 ? 'them' : 'it';
+				$notif = "<b>You currently have ({$datac}) pending map approval{$extension1}.</b> <a href=\"".admin_url('admin.php?page=tcmaplists_admin_pending')."\">Check {$extension2} out</a>";
+		}
+		
+		if($notif) {
+			echo $notif;
+		}
+		else {
+			echo 'All clear boss.';
 		}
 	}
 	

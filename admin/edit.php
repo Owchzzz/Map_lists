@@ -19,7 +19,7 @@ div.form-grp {
 </style>
 <div class="wrap">
 	<h2>
-		<a style="color:#4c4c4c;" href="<?php echo admin_url('admin.php?page=tcmaplists_admin');?>"><i class="icon ion-arrow-left-b"></i></a> Editing <?php echo $user_data->name;?>
+		<a style="color:#4c4c4c;" href="<?php echo $_SERVER['HTTP_REFERER'];?>"><i class="icon ion-arrow-left-b"></i></a> Editing <?php echo $user_data->name;?>
 	</h2>
 	<hr/>
 	<form method="POST" class="editor" action="<?php echo admin_url('admin.php?page='.$_REQUEST['page'])?>&action=submit_modify">
@@ -76,10 +76,13 @@ div.form-grp {
 		<div style="clear:both;">
 			
 		</div>
-		<h3>
-			Description
-		</h3>
-		<?php wp_editor($user_data->desc,'desc');?><br/>
-		<input type="submit" class="button-primary" style="float:right;"/>
+		<label style="display:block;float:left;">Description: </label>
+		<select name="desc" style="display:block;float:left;margin-left:5%;width:40%;">
+						<option><?php echo $user_data->desc;?></option>
+						<option>PSC Patient</option>
+						<option>PSC Supporter</option>
+						<option>PSC Clinician</option>
+						<option>PSC Research</option>
+					</select>
 	</form>
 </div>

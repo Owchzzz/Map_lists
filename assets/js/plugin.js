@@ -50,6 +50,51 @@ function codeAddress() {
 	    }
 }
 
+function codeAddress2() {
+    if(document.getElementById("google-loc-2") !== null)
+	    {
+	  //In this case it gets the address from an element on the page, but obviously you  could just pass it to the method instead
+    var address = document.getElementById("google-loc-2").value;
+
+    geocoder.geocode( { 'address': address}, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+		// alert(results[0].geometry.location);
+		 var country=getCountry(results[0].address_components);
+		 personal_location = country;
+		 
+		 
+		 var latitude = results[0].geometry.location.lat();
+		 var longitude = results[0].geometry.location.lng();
+        //In this case it creates a marker, but you can get the lat and lng from the location.LatLng
+        //map.setCenter(results[0].geometry.location);
+		 if(personal_location == 'US') {
+			 
+			 // Set lat and longitude
+			 document.getElementById('google-loc-lat2').value = latitude;
+			 document.getElementById('google-loc-long2').value = longitude;
+			 set_add_form2(results[0].address_components);
+			 //Remove markers and add new marker
+		 for(var i=0; i < markers.length; i++) {
+			 markers[i].setMap(null);
+		 }
+           var marker =  new google.maps.Marker({
+            map: map, 
+            position: results[0].geometry.location
+        	});
+		 }
+		 else {
+			 alert('Only allowed for members from the United States');
+			 document.getElementById('google-loc-2').value = "";
+			 document.getElementById('google-loc-2').focus();
+		 }
+		 markers.push(marker);
+      } else {
+        //alert("Please enter a valid address");
+      }
+    });
+	    }
+}
+
 function getCountry(addrComponents) {
     for (var i = 0; i < addrComponents.length; i++) {
         if (addrComponents[i].types[0] == "country") {
@@ -92,6 +137,37 @@ function set_add_form(addrComponents) {
 	 }
 	if(document.getElementById('zipcode').value == '') {
 		document.getElementById('zipcode').value = 'INSERT ZIP';
+	}
+    return false;
+}
+
+function set_add_form2(addrComponents) {
+	 for (var i = 0; i < addrComponents.length; i++) {
+		 console.log('initializing component search on type: ' + addrComponents[i].types);
+        var addComp2 = addrComponents[i].types;
+		 for(var k = 0; k < addComp2.length; k++) {
+			 console.log('searhing... ' + addComp2[k]);
+			 if(addComp2[k] == 'locality') { // City
+				 document.getElementById('city2').value = addrComponents[i].long_name;
+				 console.log('FOUND CITY');
+			 }
+			 if(addComp2[k] == 'country' || addComp2[k] == 'political') {
+				 document.getElementById('country2').value = personal_location;
+				 console.log('FOUND COUNTRY');
+			 }
+			 if(addComp2[k] == 'administrative_area_level_1') { // State
+				 document.getElementById('state2').value = addrComponents[i].long_name;
+				 console.log('FOUND STATE');
+			 }
+			 if(addComp2[k] == 'postal_code') {
+				 document.getElementById('zipcode2').value= addrComponents[i].short_name;
+				 console.log('FOUND ZIP');
+			 }
+		 }
+		
+	 }
+	if(document.getElementById('zipcode2').value == '') {
+		document.getElementById('zipcode2').value = 'INSERT ZIP';
 	}
     return false;
 }
@@ -167,12 +243,28 @@ jQuery(function ($) {
 
 		return false;
 	});
+	
+	var input2 = document.getElementById('google-loc-2');
+	
+	var defaultbounds2 = new google.maps.LatLngBounds(
+	new google.maps.LatLng(-90,-180),
+	new google.maps.LatLng(90,180));
+	
+	var options2 = {
+		bounds:defaultbounds2
+	};
+	var autocomplete2 = new google.maps.places.Autocomplete(input2,options2);
+
+	
 		
 	//Change values when input changed
 	$('#google-loc').on('blur',function(){
 		codeAddress();
 	});
 	
+	$('#google-loc-2').on('blur',function(){
+		codeAddress2();
+	});
 	
 	//AJAX FUNCTIONALITY
 	$('#tc_google_map_submit').on('submit',function(e){
@@ -199,6 +291,29 @@ jQuery(function ($) {
 			
 	});
 	
+	//AJAX FUnctionality 2
+	$('#tc_google_map_submit2').on('submit',function(e){
+		e.preventDefault();
+		var validsubmit = false;
+		var isValidZip = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test($('#zipcode2').val());
+			if(isValidZip) {
+				validsubmit = true;
+			}
+			else {
+				alert('Invalid Zip code. Please enter a vlid US ZIP CODE.');
+				$('#zipcode').focus();
+			}
+		if(validsubmit){
+			var postData = $(this).serializeArray();
+			$.post(tc_resource_obj_ml.ajax_url,
+				 {'action' : 'submit_map_data2', postData},
+				 function(response){
+					$('#tc_google_map_submit2').html(response);
+					tcFormSuccess = true;
+				});
+		}
+			
+	});
 	
 	//Modal extended functionality
 	window.closebtn = function() {
@@ -371,6 +486,15 @@ function initialize() {
 		'<li>'+mapobj['location']+'</li>'+
 		'<br/><li><b>Description:</b>' +mapobj['desc']+ '</li></ul>';
      + '</div>';
+		
+		if(mapobj['anonymous'] == 1) {
+			var contentString = '<div id="content">'+
+		    '<ul style="display:block;margin:0px !important;list-style-type:none;"> ' +
+			'<li>Anonymous</li>' +
+			'<li>'+mapobj['city']+'</li>'+
+			'<br/><li><b>Description:</b>' +mapobj['desc']+ '</li></ul>';
+		+ '</div>';
+		}
 		marker.set('location',myLatLng);
 		marker.set('content',contentString);
 		

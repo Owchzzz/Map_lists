@@ -4,6 +4,14 @@
 $plugin_dep_ionicon = class_exists('IonIcons') ? true : false;
 $plugin_dep_ssl = class_exists('SSLInsecureContentFixer') ? true : false;
 
+if(isset($_GET['status'])) {
+	if($_GET['status'] == 'complete_approve') {
+		echo '<div class="notice is-dismissible">
+			<p>Successfully approved.</p>
+		</div>';
+	}
+}
+
 ?>
 
 
@@ -28,7 +36,6 @@ $plugin_dep_ssl = class_exists('SSLInsecureContentFixer') ? true : false;
 	<form method="POST">
 
 	<?php // Show table
-
 if ( ! class_exists( 'WP_List_Table' ) ) {
     require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 }
@@ -62,8 +69,8 @@ class Techriver_maplists_list extends WP_List_Table{
 			 'location' => 'Location',
 			 'email' => 'Email',
 			 'desc' => 'Description',
-			 'approved' => 'Approved',
-			 'anonymous' => 'Anonymous'
+			 'anonymous' => 'Anonymous',
+			 'approved' => 'Approved'
 			 
 		 );
 		
@@ -73,7 +80,7 @@ class Techriver_maplists_list extends WP_List_Table{
 	public function get_data($per_page = 10, $page_number = 1) {
 		global $wpdb;
 		
-		 $sql = "SELECT * FROM {$this->tablename} WHERE approved=(1)";
+		 $sql = "SELECT * FROM {$this->tablename} WHERE approved=(0)";
  
 		 if ( ! empty( $_REQUEST['orderby'] ) ) {
 		   $sql .= ' ORDER BY ' . esc_sql( $_REQUEST['orderby'] );
@@ -92,6 +99,14 @@ class Techriver_maplists_list extends WP_List_Table{
 		    [ 'id' => $id ],
 		    [ '%d' ]
 		  );
+	}
+	
+	
+	public function approve_data($id, $table) {
+		global $wpdb;
+		$data = array('approved'=>true);
+		$wpdb->update($table,$data,array('id'=>$id));
+		return true;
 	}
 	
 	public static function record_count($tablename) {
@@ -118,8 +133,7 @@ class Techriver_maplists_list extends WP_List_Table{
 	public function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
 			case 'approved':
-				return ($item[$column_name] == 1) ? 'Yes' : 'No';
-				break;
+				return $item[ $column_name ] == 1 ? 'Yes':'Not yet';
 			case 'anonymous':
 				return ($item[$column_name] == 1) ? 'Yes' : 'No';
 				break;
@@ -153,10 +167,12 @@ class Techriver_maplists_list extends WP_List_Table{
 	function column_id( $item ) {
 		$delete_nonce = wp_create_nonce( 'sp_delete_customer');
 		$modify_nonce = wp_create_nonce( 'sp_modify_customer' );
+		$approve_nonce = wp_create_nonce( 'sp_approve_customer' );
 		$title = '<strong>' . $item['id'] . '</strong>';
 		$actions = [
 			'delete' => sprintf( '<a href="?page=%s&action=%s&id=%s&_wpnonce=%s">Delete</a>', esc_attr( $_REQUEST['page'] ), 'delete', absint( $item['id'] ), $delete_nonce ),
-			'modify' => sprintf( '<a href="?page=%s&action=%s&id=%s&_wpnonce=%s">Modify</a>',esc_attr( $_REQUEST['page'] ), 'modify', absint( $item['id'] ), $modify_nonce )
+			'modify' => sprintf( '<a href="?page=%s&action=%s&id=%s&_wpnonce=%s">Modify</a>','tcmaplists_admin&hide_ui=true', 'modify', absint( $item['id'] ), $modify_nonce ),
+			'Approve' => sprintf( '<a href="?page=%s&action=%s&id=%s&_wpnonce=%s">Approve</a>',esc_attr( $_REQUEST['page'] ), 'approve', absint( $item['id'] ), $approve_nonce ),
 		];
 		return $title . $this->row_actions( $actions );
 	}
@@ -189,6 +205,7 @@ class Techriver_maplists_list extends WP_List_Table{
 	public function get_bulk_actions() {
 		$actions = [
 			'bulk-delete' => 'Delete',
+			'bulk-approve' => 'Approve'
 		];
 		return $actions;
 	}
@@ -203,6 +220,7 @@ class Techriver_maplists_list extends WP_List_Table{
 		$this->_column_headers = array($columns,$hidden,$sortable);
 		/** Process bulk action */
 		$this->process_bulk_action();
+		$this->process_single_action();
 		$per_page     = $this->per_page;
 		$current_page = $this->get_pagenum();
 		$total_items  = self::record_count($this->tablename);
@@ -212,6 +230,14 @@ class Techriver_maplists_list extends WP_List_Table{
 		] );
 		$this->items = $this->get_data( $per_page, $current_page );
 		$this->process_bulk_action();
+	}
+	
+	public function process_single_action() {
+		if(isset($_GET['action']) && $_GET['action'] == 'approve') {
+			$this->approve_data($_GET['id'],$this->tablename);
+			echo '<meta http-equiv="refresh" content="0; url='.admin_url('admin.php?page='.$_REQUEST['page'].'&status=complete_approve').'">';
+			exit;
+		}
 	}
 	public function process_bulk_action() {
 		
@@ -225,17 +251,23 @@ class Techriver_maplists_list extends WP_List_Table{
 				$this->delete_data($id,$this->tablename);
 			}
 			//wp_redirect( admin_url('admin.php?page=tcmaplists_admin')  );
-			echo '<meta http-equiv="refresh" content="0; url='.admin_url('admin.php?page=tcmaplists_admin').'">';
+			echo '<meta http-equiv="refresh" content="1; url='.admin_url('admin.php?page='.$_REQUEST['page']).'">';
 			exit;
+		}
+		// If the approve bulk action is triggered
+		if ( ( isset( $_POST['action'] ) && $_POST['action'] == 'bulk-approve' )
+		     || ( isset( $_POST['action2'] ) && $_POST['action2'] == 'bulk-approve' )
+		) {
+			$approve_ids = esc_sql($_POST['bulk-delete']);
+			foreach($approve_ids as $id) {
+				$this->approve_data($id,$this->tablename);
+			}
 		}
 	}
 }
-if(!isset($_GET['hide_ui'])) {
-	$map_lists_list = new Techriver_maplists_list();
-	$map_lists_list->prepare_items();
-	$map_lists_list->display();
-}
-
+$map_lists_list = new Techriver_maplists_list();
+$map_lists_list->prepare_items();
+$map_lists_list->display();
 ?> <!--END OF MAP List Table PHP-->
 				
 	</form>

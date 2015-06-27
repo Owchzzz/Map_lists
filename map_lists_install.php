@@ -46,6 +46,9 @@ class Techriver_Map_lists_install {
 			longitude DOUBLE NOT NULL,
 			email text NOT NULL,
 			desc text NOT NULL,
+			type text NOT NULL,
+			anonymous Boolean Default '0' NOT NULL,
+			approved Boolean Default '0' NOT NULL,
 			UNIQUE KEY id (id)
 		) $charset_collate;";
 		
